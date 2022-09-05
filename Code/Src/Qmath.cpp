@@ -17,10 +17,13 @@ static ans_data square_solve (const var_data* var)
     ans_data ans = {};
 
     D = (var->b * var->b) - (4 * var->a * var->c);
-    
-    if (D < 0)
+    if (!isfinite(D))
     {
-        ans.stat = ans.stat | BAD_DISC;
+        ans.stat = ans.stat | BED_DISC;
+        return ans;
+    }
+    else if (D < 0)
+    {
         ans.stat = ans.stat | NO_ANS;
         return ans;
     }
@@ -28,6 +31,10 @@ static ans_data square_solve (const var_data* var)
     {
         ans.stat = ans.stat | ONE_ANS;
         ans.x_1 = -var->b/(2 * var->a);
+        if (!isfinite(ans.x_1))
+        {
+            ans.stat = ans.stat | BED_ANS;
+        }
         return ans;
     }
     else
@@ -35,6 +42,10 @@ static ans_data square_solve (const var_data* var)
         ans.stat = ans.stat | TWO_ANS;
         ans.x_1 = (-var->b + sqrtl(D))/(2 * var->a);
         ans.x_2 = (-var->b - sqrtl(D))/(2 * var->a);
+        if (!isfinite(ans.x_1) || !isfinite(ans.x_2))
+        {
+            ans.stat = ans.stat | BED_ANS;
+        }
         return ans;    
     }
 }
@@ -69,7 +80,6 @@ ans_data trinomial_solve (var_data* var)
         {
             ans_data ans = {};
             ans.stat = ans.stat | NO_ANS;
-            ans.stat = ans.stat | BAD_LOG_CONST;
             return ans;
         }
     }
