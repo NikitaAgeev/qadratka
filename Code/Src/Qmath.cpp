@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 
 #include "../Inc/main.h"
 #include "../Inc/Qmath.h"
@@ -10,11 +11,12 @@ static ans_data square_solution (const var_data* var);
 static ans_data line_solve (const var_data* var);
 
 
-
 static ans_data square_solve (const var_data* var)
 {
+    assert(var != NULL);
+    
     double D = 0;
-    ans_data ans = {};
+    ans_data ans = {0};
 
     D = (var->b * var->b) - (4 * var->a * var->c);
     if (!isfinite(D))
@@ -31,35 +33,45 @@ static ans_data square_solve (const var_data* var)
     {
         ans.stat = ans.stat | ONE_ANS;
         ans.x_1 = -var->b/(2 * var->a);
+
         if (!isfinite(ans.x_1))
         {
             ans.stat = ans.stat | BED_ANS;
         }
+
         return ans;
     }
     else
     {
         ans.stat = ans.stat | TWO_ANS;
+
         ans.x_1 = (-var->b + sqrtl(D))/(2 * var->a);
         ans.x_2 = (-var->b - sqrtl(D))/(2 * var->a);
+        
         if (!isfinite(ans.x_1) || !isfinite(ans.x_2))
         {
             ans.stat = ans.stat | BED_ANS;
         }
+
         return ans;    
     }
 }
 
 static ans_data line_solve (const var_data* var)
 {
+    assert(var != NULL);
+
     ans_data ans = {};
     ans.stat = ans.stat | ONE_ANS;
-    ans.x_1 = var->c/var->b;
+    ans.x_1 = -var->c/var->b;
+    
     return ans;
 }
 
 ans_data trinomial_solve (var_data* var)
 {
+    assert(var != NULL);
+
     //Логическая проверка типа уравнения
     if ((var->eqation_tipe == SQR_EQ) && (d_comp(var->a, 0) == AeqB))
     {
@@ -71,6 +83,7 @@ ans_data trinomial_solve (var_data* var)
     if ((var->eqation_tipe == LINE_EQ) && (d_comp(var->b, 0) == AeqB))
     {   
         ans_data ans = {};
+
         if (d_comp(var->c, 0) == AeqB)
         {
             ans.stat = ans.stat | INF_ANS;
@@ -78,8 +91,8 @@ ans_data trinomial_solve (var_data* var)
         }
         else
         {
-            ans_data ans = {};
             ans.stat = ans.stat | NO_ANS;
+            
             return ans;
         }
     }
